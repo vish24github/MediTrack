@@ -1,0 +1,79 @@
+name: CI/CD Pipeline with Blue-Green Deployment
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    name: Build and Push Docker Images
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service:
+          - appointment-scheduling-service
+          - data-aggregator-service
+          - notification-service
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r ${{ matrix.service }}/requirements.txt
+
+      - name: Build Docker Image
+        run: |
+          docker build -t vishwanih/${{ matrix.service }}:latest ./${{ matrix.service }}
+
+      - name: Push Docker Image to DockerHub
+        run: |
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+          docker push vishwanih/${{ matrix.service }}:latest
+
+  blue-green-deploy:
+    name: Blue-Green Deployment
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    strategy:
+      matrix:
+        service:
+          - appointment-scheduling-service
+          - data-aggregator-service
+          - notification-service
+    steps:
+      - name: Set up Kubernetes CLI
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'v1.26.0'
+
+      - name: Configure Kubernetes Context
+        run: |
+          echo "${{ secrets.KUBECONFIG_CONTENT }}" > $HOME/.kube/config
+
+      - name: Deploy Green Deployment
+        run: |
+          kubectl apply -f kubernetes/${{ matrix.service }}-green.yaml
+
+      - name: Test Green Deployment
+        run: |
+          kubectl rollout status deployment/${{ matrix.service }}-green
+          # Add health check or integration test commands here
+
+      - name: Switch Traffic to Green
+        run: |
+          kubectl apply -f kubernetes/${{ matrix.service }}-green-service.yaml
+          # Wait for traffic switch confirmation
+          sleep 30
+
+      - name: Clean Up Blue Deployment
+        run: |
+          kubectl delete deployment/${{ matrix.service }}-blue
+          kubectl delete service/${{ matrix.service }}-blue
