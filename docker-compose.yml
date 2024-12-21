@@ -1,0 +1,59 @@
+version: "3.8"
+
+services:
+  db-service:
+    image: postgres:17.2
+    container_name: db-service
+    environment:
+      POSTGRES_DB: meditrack_db
+      POSTGRES_USER: meditrack_user1
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  patient-record-service:
+    image: vishwanih/patient-service:latest
+    container_name: patient-record-service
+    environment:
+      DATABASE_URL: postgresql://meditrack_user1:password@db-service:5432/meditrack_db
+    ports:
+      - "5001:5001"
+    depends_on:
+      - db-service
+
+  appointment-scheduling-service:
+    image: vishwanih/appointment-service:latest
+    container_name: appointment-scheduling-service
+    environment:
+      DATABASE_URL: postgresql://meditrack_user1:password@db-service:5432/meditrack_db
+    ports:
+      - "5002:5002"
+    depends_on:
+      - db-service
+
+  notification-service:
+    image: vishwanih/notification-service:latest
+    container_name: notification-service
+    environment:
+      DATABASE_URL: postgresql://meditrack_user1:password@db-service:5432/meditrack_db
+      EMAIL_API_KEY: your-email-api-key
+      SMS_API_KEY: your-sms-api-key
+    ports:
+      - "5003:5003"
+    depends_on:
+      - db-service
+
+  data-aggregator-service:
+    image: vishwanih/data-aggregator-service:latest
+    container_name: data-aggregator-service
+    environment:
+      DATABASE_URL: postgresql://meditrack_user1:password@db-service:5432/meditrack_db
+    ports:
+      - "5004:5004"
+    depends_on:
+      - db-service
+
+volumes:
+  db_data:

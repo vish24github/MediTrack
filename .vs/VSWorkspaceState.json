@@ -1,0 +1,11 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\Data_Aggregator_Service",
+    "\\kubernetes",
+    "\\kubernetes\\config",
+    "\\kubernetes\\deployment"
+  ],
+  "SelectedNode": "\\kubernetes\\service",
+  "PreviewInSolutionExplorer": false
+}

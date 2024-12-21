@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-service-green
+  labels:
+    app: notification-service
+    version: green
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: notification-service
+      version: green
+  template:
+    metadata:
+      labels:
+        app: notification-service
+        version: green
+    spec:
+      containers:
+      - name: notification-service
+        image: vishwanih/notification-service:latest/notification-service:latest
+        ports:
+        - containerPort: 5003
+        envFrom:
+        - configMapRef:
+            name: healthsync-config
+        - secretRef:
+            name: db-secrets

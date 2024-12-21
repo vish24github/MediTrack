@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: appointment-scheduling-service
+spec:
+  selector:
+    app: appointment-scheduling-service
+    version: green
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 5002
+  type: LoadBalancer

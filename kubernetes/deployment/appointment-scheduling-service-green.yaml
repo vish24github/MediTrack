@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: appointment-scheduling-service-green
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: appointment-scheduling-service
+      version: green
+  template:
+    metadata:
+      labels:
+        app: appointment-scheduling-service
+        version: green
+    spec:
+      containers:
+      - name: appointment-scheduling-service
+        image: vishwanih/appointment-scheduling-service:latest
+        ports:
+        - containerPort: 5002
+

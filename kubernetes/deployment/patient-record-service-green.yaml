@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: patient-record-service-green
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: patient-record-service
+      version: green
+  template:
+    metadata:
+      labels:
+        app: patient-record-service
+        version: green
+    spec:
+      containers:
+      - name: patient-record-service
+        image: vishwanih/patient-record-service:latest
+        ports:
+        - containerPort: 5001
+        env:
+        - name: DATABASE_URL
+          value: "postgresql://meditrack_user1:password@db-service:5432/meditrack_db"
+

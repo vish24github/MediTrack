@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: appointment-scheduling-service
+  labels:
+    app: appointment-scheduling-service
+spec:
+  selector:
+    app: appointment-scheduling-service
+    version: blue
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 5002

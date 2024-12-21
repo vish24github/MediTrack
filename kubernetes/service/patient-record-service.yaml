@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: patient-record-service
+  labels:
+    app: patient-record-service
+spec:
+  type: ClusterIP
+  selector:
+    app: patient-record-service
+  ports:
+    - protocol: TCP
+      port: 5001
+      targetPort: 5001
