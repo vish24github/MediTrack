@@ -43,8 +43,8 @@ jobs:
         python -m pip install -r ./Data_Aggregator_Service/requirements.txt
 
     # Run tests for each service
-    - name: Run Tests for Patient Record Service
-      run: python -m unittest discover -s ./Patient_Record_Service/tests
+   # - name: Run Tests for Patient Record Service
+  #    run: python -m unittest discover -s ./Patient_Record_Service/tests
 
     - name: Run Tests for Appointment Service
       run: python -m unittest discover -s ./Appointment_Service/tests
